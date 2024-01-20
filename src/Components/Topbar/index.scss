@@ -1,0 +1,68 @@
+.top-bar {
+  display: flex;
+  align-items: center;
+  position: absolute;
+  top: 0px;
+  width: 100%;
+  left: 0px;
+  height: 70px;
+  background-color: #fff;
+  color: grey;
+  box-shadow: #00000016 0px 10px 10px;
+  padding-left: 24px;
+  padding-right: 24px;
+  justify-content: space-between;
+
+  .topbar-left {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+
+  .docs-icon {
+    height: 80%;
+  }
+}
+.topbar-right {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.top-image {
+  border-radius: 50%;
+  height: 60%;
+}
+
+.top-title {
+  font-size: 24px;
+}
+
+.title-buttons{
+    display: flex;
+    gap: 20px;
+    margin: 20px;
+}
+
+.Signout {
+  padding: 10px 15px;
+  border-radius: 5px;
+  outline: none;
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background-color: #fff;
+  color: black;
+  border: red 2px solid;
+  cursor: pointer;
+  font-weight: 700 ;
+}
+
+.dropdown-right {
+  position: absolute;
+  right: 0;
+  top: 0;
+}

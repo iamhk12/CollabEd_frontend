@@ -1,0 +1,74 @@
+.edit-container {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    width: 50vw;
+    .saving-conf {
+      text-align: left;
+    }
+  }
+
+
+  .back-react-icon{
+    position:fixed;
+    left:20px;
+    top: 130px;
+    cursor:pointer;
+    color: black;
+
+  }
+  
+  .search-bar-icon{
+    position:absolute;
+    right:-10px;
+    bottom: -5px;
+    width: 15px;
+    background-color: #fff;
+    color: gray;
+
+  }
+
+  .title-input {
+    background-color: white;
+    margin-top: 20px;
+    outline: none;
+    border: none;
+    color: #212121;
+    border: 1px solid #d5d5d5;
+    width: 150%;
+    height: 50px;
+    font-size: 25px;
+    border-radius: 5px;
+    padding-left: 20px ;
+    box-shadow: #00000027 0px 10px 10px;
+
+  }
+  
+  .quill-container {
+    margin-top: 70px;
+    text-align: center;
+    width: 150%;
+    height: auto;
+    border-radius: 5px;
+    box-shadow: #00000027 0px 0px 10px;
+    overflow: hidden;
+  
+    .ql-container.ql-snow {
+      border: none;
+      outline: none;
+      font-size: 20px;
+      color: black;
+      background-color: white;
+      height: 500px;
+    }
+  
+    .ql-toolbar.ql-snow {
+      border: none;
+      outline: none;
+      width: 100%;
+      color: black;
+      background-color: #d5d5d5;
+    }
+  }

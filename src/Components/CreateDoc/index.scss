@@ -1,0 +1,55 @@
+.new-doc-container {
+    display: flex;
+    justify-content: center;
+
+    // overflow-y:auto;
+
+}
+    .new-doc-inner {      
+  
+      .start-doc{
+        width: 200px;
+        height: 300px;
+        cursor: pointer;
+        border: none;
+        margin: 0px 15px;
+        border-radius: 3px;
+        background-color: #fff;
+        margin-top: 30px;
+        margin-bottom: 10px;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0px 7px 10px #00000018;
+  
+      }
+
+      .start-doc-icon{
+        
+        width: 100%;
+        font-size: 70px;
+        text-align: center;
+        display: flex;
+        justify-content: center;
+        color: black;
+      }
+  
+      .start-doc:hover {
+        border: 1px solid #7492de;
+      }
+  
+      .title,p {
+        margin-top: 5px;
+        color: grey;
+        font-weight: bold;
+        font-size: larger;
+      }
+  }
+  
+  @media (min-width: 767px) {
+    .new-doc-container {
+      text-align: center;
+    }
+
+    
+  }
+
