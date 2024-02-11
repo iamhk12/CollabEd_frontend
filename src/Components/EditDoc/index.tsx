@@ -203,8 +203,11 @@ function shareViaEmail() {
   });
 
   // Continue with sending the email
-  emailjs.send(serviceId, templateId, { title, content: "Hello user, A new document is shared with you on Collabed.\n Please visit <a href='https://app-collabed.vercel.app/'>https://app-collabed.vercel.app/</a> to view it. \n \nRegards, Team Collabed.", recipients })
-    .then((response) => {
+  emailjs.send(serviceId, templateId, { 
+    title, 
+    content: "Hello user,\nA new document is shared with you on Collabed.\nPlease visit https://app-collabed.vercel.app/\n\nRegards, Team Collabed.", 
+    recipients 
+}).then((response) => {
       console.log('Email sent successfully!', response.status, response.text);
       toast.success('Email sent successfully!');
     }, (error) => {
