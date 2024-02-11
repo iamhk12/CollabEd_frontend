@@ -4,15 +4,27 @@ import ReactQuill from "react-quill";
 import EditorToolbar, { modules, formats } from "../../Toolbar";
 import html2pdf from "html2pdf.js";
 import { editDoc, getCurrentDoc } from "../../API/Firestore";
-
+import Quill from "react-quill";
 import { deleteDocument } from "../../API/Firestore";
 import { io } from "socket.io-client";
-
 import { FaArrowLeft } from "react-icons/fa";
 import { saveAs } from "file-saver";
 import { toast } from "react-toastify";
 import { limit } from "firebase/firestore";
+import TaskManager from "../TaskManager/TaskManager";
+import { Content } from "antd/es/layout/layout";
+import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
+import { firestore } from "../../firebaseConfig";
 
+const userDocumentsCollection = 'userDocuments';
+
+import emailjs from '@emailjs/browser';
+import { Button, Modal, Input } from 'antd';
+
+interface FunctionInterface {
+  handleEdit: () => void;
+  id: string;
+}
 // import { Quill} from "react-quill";
 // import { firestore } from "../../firebaseConfig";
 
@@ -20,6 +32,9 @@ export default function EditDoc({ handleEdit, id }: functionInterface) {
   const quillRef = useRef<any>(null);
   const [value, setValue] = useState("");
   const [title, setTitle] = useState("");
+
+  
+  
   const [isTextToSpeechActive, setIsTextToSpeechActive] = useState(false);
 
   const toggleTextToSpeech = () => {
@@ -38,6 +53,8 @@ export default function EditDoc({ handleEdit, id }: functionInterface) {
     title: "",
     value: "",
   });
+
+  
 
 
   let debounceTimeout: any;
@@ -60,6 +77,8 @@ export default function EditDoc({ handleEdit, id }: functionInterface) {
   //   await deleteDoc(doc(firestore, "docs", id));
 
   //   }
+
+
 
   function editDocument() {
     const payload = {
@@ -104,24 +123,99 @@ export default function EditDoc({ handleEdit, id }: functionInterface) {
     // Additional dependencies if needed
   }, [isTextToSpeechActive]);
 
-  function saveTodoc() {
-    const content = value;
 
-    var opt = {
-      margin: 1,
-      filename: title+"_doc",
-      image: { type: "jpeg", quality: 0.98 },
-      html2canvas: { scale: 2, backgroundColor: "#ffffff" },
-      jsPDF: { unit: "in", format: "letter", orientation: "portrait" },
-      pdfOptions: { textColor: "#000000" },
-    };
+
   
 
-    html2pdf().from(content).set(opt).save();
+  // function saveTodoc() {
+  //   const content = value;
 
-    // Old monolithic-style usage:
-    html2pdf(content, opt);
-  }
+  //   var opt = {
+  //     margin: 1,
+  //     filename: title+"_doc",
+  //     image: { type: "jpeg", quality: 0.98 },
+  //     html2canvas: { scale: 2, backgroundColor: "#ffffff" },
+  //     jsPDF: { unit: "in", format: "letter", orientation: "portrait" },
+  //     pdfOptions: { textColor: "#000000" },
+  //   };
+  
+
+  //   html2pdf().from(content).set(opt).save();
+
+  //   // Old monolithic-style usage:
+  //   html2pdf(content, opt);
+  // }
+
+  // import { Export2Word } from "../path/to/Export2Word"; // Import the Export2Word function
+
+
+
+
+function saveTodoc() {
+  const content = `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>Document</title></head><body>${value}</body></html>`;
+
+  var opt = {
+    margin: 1,
+    filename: title + "_doc",
+    image: { type: "jpeg", quality: 0.98 },
+    html2canvas: { scale: 2, backgroundColor: "#ffffff" },
+    jsPDF: { unit: "in", format: "letter", orientation: "portrait" },
+    pdfOptions: { textColor: "#000000" },
+  };
+
+  // Save as PDF
+  html2pdf().from(content).set(opt).save();
+
+  // Save as DOC
+  const blob = new Blob([content], { type: "application/msword" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = title + ".doc";
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
+
+  const [emailDialogVisible, setEmailDialogVisible] = useState(false);
+  const [recipients, setRecipients] = useState<string[]>([]);
+
+  const serviceId = 'service_ufwmvss';
+const templateId = 'template_mli5n6b';
+
+function shareViaEmail() {
+  emailjs.init("N_jWQg1-xRldlDmGg");
+  console.log('Recipients:', recipients); 
+  const documentId = id; 
+
+  
+  recipients.forEach(async (recipientEmail) => {
+    const recipientUserDocRef = doc(firestore, userDocumentsCollection, recipientEmail);
+    const recipientUserDocSnap = await getDoc(recipientUserDocRef);
+
+    if (recipientUserDocSnap.exists()) {
+      const updatedDocuments = [...recipientUserDocSnap.data().documents, documentId];
+      await updateDoc(recipientUserDocRef, { documents: updatedDocuments });
+    } else {
+      // If the userDocuments document for the recipient doesn't exist, create it
+      await setDoc(recipientUserDocRef, { documents: [documentId] });
+    }
+  });
+
+  // Continue with sending the email
+  emailjs.send(serviceId, templateId, { title, content: quillRef.current.getEditor().root.innerHTML, recipients })
+    .then((response) => {
+      console.log('Email sent successfully!', response.status, response.text);
+      toast.success('Email sent successfully!');
+    }, (error) => {
+      console.log('Error sending email:', error);
+      toast.error('Error sending email. Please try again later.');
+    });
+}
+
+
+
+
   // function saveTodoc() {
   //   const content = "Title" + title + "\n" + value + "\n";
 
@@ -264,27 +358,19 @@ export default function EditDoc({ handleEdit, id }: functionInterface) {
       <div className="edit-container">
         <FaArrowLeft onClick={handleEdit} size={30} className="back-react-icon" />
 
-        <input
-          onChange={(event) => {
-            setTitle(event?.target.value);
-          }}
-          value={title}
-          className="title-input"
-          placeholder="Untitled"
-        />
-        <div className="title-buttons">
-          <button onClick={saveTodoc}>Download Doc</button>
-          {/* <button onClick={Export2Word('exportContent','word-content.docx')}>Export as .doc</button>  */}
+  
+        {/* <ShareDocumentByEmail id={id} title={title} content={value} /> */}
 
-          <button onClick={DeleteDoc}>Delete Doc</button>
-        </div>
-        <div className="quill-container">
-          <EditorToolbar />
-          <button onClick={toggleTextToSpeech}>
+        <button id="speechtotext" onClick={toggleTextToSpeech}>
             {isTextToSpeechActive
-              ? "Stop Text-to-Speech"
-              : "Start Text-to-Speech"}
+              ? "Stop Doc Reading"
+              : "Start Doc Reading"}
           </button>
+
+      
+        <div className="quill-container">
+        {/* <TaskManager/> */}
+          <EditorToolbar />
           <ReactQuill
             className="react-quill"
             theme="snow"
@@ -300,7 +386,75 @@ export default function EditDoc({ handleEdit, id }: functionInterface) {
             formats={formats}
             id="exportContent"
           />
+          
+          {/* <Quill
+            className="react-quill"
+            theme="snow"
+            onBlur={() => {
+              setTimeout(() => {
+                socket?.emit("send-changes");
+              }, 1000);
+            }}
+            ref={quillRef}
+            value={value}
+            onChange={Changehandler}
+            modules={modules}
+            formats={formats}
+            id="exportContent"
+          /> */}
+  </div>
+  {/* <div className="taskmanager-container">
+           <Quill
+            className="react-quill"
+            theme="snow"
+            onBlur={() => {
+              setTimeout(() => {
+                socket?.emit("send-changes");
+              }, 1000);
+            }}
+            ref={quillRef}
+            value={value}
+            onChange={Changehandler}
+            modules={modules}
+            formats={formats}
+            id="exportContent"
+          />
+          <TaskManager/>
+  </div> */}
+
+
+
+
+
+        <div className="title-buttons">
+          <button onClick={saveTodoc}>Download Doc</button>
+          {/* <button onClick={Export2Word('exportContent','word-content.docx')}>Export as .doc</button>  */}
+          <Button type="primary" onClick={() => setEmailDialogVisible(true)}>
+            Share Via Email
+          </Button>
+          <button onClick={DeleteDoc} id="delete" >Delete Doc</button>
+          
         </div>
+        <Modal
+          title="Share Document"
+          visible={emailDialogVisible}
+          onCancel={() => setEmailDialogVisible(false)}
+          footer={null}
+        >
+          <Input.TextArea
+  value={recipients.join(', ')}
+  onChange={(e) => {
+    const inputValue = e.target.value;
+    const recipientEmails = inputValue.split(/\s*,\s*/);
+    setRecipients(recipientEmails);
+  }}
+  placeholder="Enter recipient email addresses, separated by commas"
+  style={{ marginBottom: 10 }}
+/>
+          <Button type="primary" onClick={() => { shareViaEmail(); setEmailDialogVisible(false); }}>
+            Share
+          </Button>
+        </Modal>
       </div>
     </div>
   );

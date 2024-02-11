@@ -1,7 +1,7 @@
 // import React from 'react'
 
 import "./index.scss";
-import docsicon from "../../assets/docsicon.png";
+import collabed_logo from "../../assets/collabed_logo.png";
 import { logout } from "../../API/Auth";
 import { IoIosLogOut } from "react-icons/io";
 
@@ -13,8 +13,8 @@ export default function Topbar({ photoURL }: TopbarProps) {
   return (
     <div className="top-bar">
       <div className="topbar-left">
-        <img className="docs-icon" src={docsicon} />
-        <p className="top-title">CollabED</p>
+        <img className="docs-icon" src={collabed_logo} />
+        {/* <p className="top-title">CollabED</p> */}
       </div>
       <div className="topbar-right">
         <img className="top-image" src={photoURL} />

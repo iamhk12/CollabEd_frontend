@@ -17,13 +17,14 @@ export default function CreateDoc({ isEdit, handleEdit, id, searchQuery, setSear
   const [showPopup, setShowPopup] = useState(false);
   const [newDocTitle, setNewDocTitle] = useState("");
 
-  const createDocument = () => {
+  const createDocument = async () => {
     const payload = {
       title: newDocTitle,
       value: "",
     };
-    createDoc(payload);
-    setReloadCounter((val : any) => val+1)
+    await createDoc(payload).then(()=>{
+      setReloadCounter((prev)=>prev+1)
+    });
   };
 
   const openPopup = () => {

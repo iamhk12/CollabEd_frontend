@@ -17,7 +17,7 @@ export default function DocsList({openDoc, searchQuery, reloadCounter}:OpenDocTy
   const getDocs=async()=>{
 
     await getDocuments(setDocs)
-    console.log(docs)
+    console.log("getting docs::::")
   }
 
   useEffect(()=>{
@@ -31,13 +31,18 @@ export default function DocsList({openDoc, searchQuery, reloadCounter}:OpenDocTy
         }
         return true;
       }).map((doc)=>{
-        return(
-          <div className="doc-card" onClick={()=>openDoc(doc.id,doc.value,doc.title)}>
-            <p className="doc-content" dangerouslySetInnerHTML={{__html:doc.value.substring(0,200)}}></p>
-            <p className="doc-title">{doc.title}</p>
-            {/* <LastSeen/> */}
-          </div>
-        )
+        console.log(doc,":::doc")
+        if(doc.title){
+          return(
+            <div className="doc-card" onClick={()=>openDoc(doc.id,doc.value,doc.title)}>
+              <p className="doc-content" dangerouslySetInnerHTML={{__html:doc.value.substring(0,200)}}></p>
+              <p className="doc-title">{doc.title}</p>
+              {/* <LastSeen/> */}
+            </div>
+          )
+        }else{
+          return <></>
+        }
       })}
     </div>
   )
